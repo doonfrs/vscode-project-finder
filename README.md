@@ -1,15 +1,18 @@
 # Project Finder
 
-A Visual Studio Code extension that allows you to quickly find and open your projects using a popup dialog triggered by the Shift+Space keyboard shortcut.
+A Visual Studio Code extension that allows you to quickly find and open your projects using a popup dialog triggered by keyboard shortcuts.
 
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-yellow.svg?style=flat-square)](https://buymeacoffee.com/doonfrs)
 
+![Project Finder Demo](images/project-finder-demo.gif)
+
 ## Features
 
-- Quick access to your projects with a simple keyboard shortcut (Shift+Space)
+- Quick access to your projects with simple keyboard shortcuts (Shift+Space or Ctrl+Shift+Space)
 - Configurable list of project folders to search
 - Automatic detection of valid projects (looks for .git, package.json, .vscode, etc.)
 - Seamless integration with VS Code's folder opening functionality
+- Open projects in the same window or a new window (using Shift+Enter)
 
 ## Support
 
@@ -43,9 +46,10 @@ Example configuration:
 
 ## Usage
 
-1. Press Shift+Space anywhere in VS Code
+1. Press Shift+Space or Ctrl+Shift+Space anywhere in VS Code
 2. Select a project from the dropdown list
-3. The selected project will open in a new window
+3. Press Enter to open in the same window, or Shift+Enter to open in a new window
+4. Alternatively, click the split-window button to toggle "New Window Mode"
 
 ## How It Works
 

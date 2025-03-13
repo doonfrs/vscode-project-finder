@@ -12,6 +12,11 @@
         "type": "git",
         "url": "https://github.com/doonfrs/vscode-project-finder"
     },
+    "icon": "images/icon.png",
+    "galleryBanner": {
+        "color": "#C80000",
+        "theme": "dark"
+    },
     "keywords": [
         "project",
         "finder",
@@ -25,13 +30,20 @@
     "categories": [
         "Other"
     ],
-    "activationEvents": [],
     "main": "./out/extension.js",
     "contributes": {
         "commands": [
             {
                 "command": "project-finder.openProjectFinder",
                 "title": "Open Project Finder"
+            },
+            {
+                "command": "project-finder.toggleNewWindowMode",
+                "title": "Toggle New Window Mode"
+            },
+            {
+                "command": "project-finder.refreshProjectFolders",
+                "title": "Refresh Project Folders"
             }
         ],
         "keybindings": [
@@ -39,6 +51,16 @@
                 "command": "project-finder.openProjectFinder",
                 "key": "shift+space",
                 "mac": "shift+space"
+            },
+            {
+                "command": "project-finder.openProjectFinder",
+                "key": "ctrl+shift+space",
+                "mac": "cmd+shift+space"
+            },
+            {
+                "command": "project-finder.toggleNewWindowMode",
+                "key": "alt+n",
+                "when": "inQuickOpen && !editorTextFocus"
             }
         ],
         "configuration": {
@@ -48,6 +70,24 @@
                     "type": "array",
                     "default": [],
                     "description": "List of folders to search for projects"
+                },
+                "projectFinder.enableProjectIndicators": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Enable project indicators to filter directories. When disabled, all directories will be shown."
+                },
+                "projectFinder.projectIndicators": {
+                    "type": "array",
+                    "default": [
+                        ".git",
+                        "package.json",
+                        ".vscode",
+                        "pom.xml",
+                        "build.gradle",
+                        "Cargo.toml",
+                        "go.mod"
+                    ],
+                    "description": "Files or folders that indicate a valid project. A folder is considered a project if it contains any of these files/folders."
                 }
             }
         }

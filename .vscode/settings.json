@@ -1,0 +1,16 @@
+{
+    "projectFinder.projectFolders": [
+        "C:\\Users\\YourName\\Projects",
+        "D:\\Work\\Repositories"
+    ],
+    "projectFinder.enableProjectIndicators": false,
+    "projectFinder.projectIndicators": [
+        ".git",
+        "package.json",
+        ".vscode",
+        "pom.xml",
+        "build.gradle",
+        "Cargo.toml",
+        "go.mod"
+    ]
+} 
