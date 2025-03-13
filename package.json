@@ -3,11 +3,22 @@
     "displayName": "Project Finder",
     "description": "Quickly find and open projects with a popup dialog",
     "version": "0.0.1",
+    "publisher": "doonfrs",
+    "author": {
+        "name": "Feras Abdalrahman"
+    },
     "license": "MIT",
     "repository": {
         "type": "git",
         "url": "https://github.com/doonfrs/vscode-project-finder"
     },
+    "keywords": [
+        "project",
+        "finder",
+        "navigation",
+        "workspace",
+        "folder"
+    ],
     "engines": {
         "vscode": "^1.60.0"
     },
