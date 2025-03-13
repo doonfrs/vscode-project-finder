@@ -14,7 +14,7 @@ Ever felt frustrated trying to find that project you worked on last week? Tired 
 
 ## ✨ Key Features
 
-- **⌨️ Keyboard-First Approach** - Access any project in milliseconds with Shift+Space
+- **⌨️ Keyboard-First Approach** - Access any project in milliseconds with Ctrl+Shift+Space
 - **🔍 Smart Project Detection** - Automatically identifies real projects with technology-specific icons
 - **⭐ Favorites System** - Mark and prioritize your most-used projects
 - **🪟 Flexible Window Control** - Open in same window (Enter) or new window (Shift+Enter)
@@ -56,6 +56,7 @@ For Linux/macOS:
 ```json
 "projectFinder.projectFolders": [
   "/home/username/projects",
+  "~/projects",
   "/var/www/html",
   "/opt/development/*"
 ]
@@ -66,13 +67,15 @@ For Linux/macOS:
 > 1. Regular path (e.g., `/home/username/projects`) - The folder itself will be added as a single project
 > 2. Wildcard path (e.g., `/opt/development/*`) - All subfolders will be scanned and added as separate projects
 >
+> **Linux/macOS users:** Tilde paths (e.g., `~/projects`) are supported and will be expanded to your home directory.
+>
 > **Windows users:** Git Bash style paths are also supported (e.g., `/c/Users/YourName/Projects`).
 
 ## 🎮 Usage
 
 ### Custom UI (Default)
 
-1. Press Shift+Space or Ctrl+Shift+Space anywhere in VS Code
+1. Press Ctrl+Shift+Space (Cmd+Shift+Space on Mac) anywhere in VS Code
 2. Use the search box to filter projects
 3. Click on a project to select it, or use arrow keys for navigation
 4. Press Enter to open in the same window, or Shift+Enter to open in a new window
@@ -89,7 +92,7 @@ To enable the native VS Code Quick Pick UI:
 
 Once enabled:
 
-1. Press Shift+Space or Ctrl+Shift+Space anywhere in VS Code
+1. Press Ctrl+Shift+Space (Cmd+Shift+Space on Mac) anywhere in VS Code
 2. Select a project from the dropdown list
 3. Press Enter to open in the same window, or Shift+Enter to open in a new window
 4. Alternatively, click the split-window button to toggle "New Window Mode"
@@ -125,7 +128,7 @@ Once enabled:
 
 ### Keyboard Ninja Workflow
 
-1. Press `Shift+Space` to open Project Finder
+1. Press `Ctrl+Shift+Space` to open Project Finder
 2. Type a few characters to filter projects
 3. Use arrow keys to navigate
 4. Press `Enter` to open in same window
@@ -143,6 +146,15 @@ Project Finder scans the configured folders for valid projects. A folder is cons
 - build.gradle file
 - Cargo.toml file
 - go.mod file
+
+The extension also detects specific frameworks and technologies, including:
+
+- JavaScript/TypeScript: React, Vue, Angular, Node.js
+- PHP: Laravel, Symfony, WordPress, Yii, Zend
+- Python: Django
+- Ruby, Java, C#, Go, Rust, Flutter, Swift, Kotlin, C++, C, Docker
+
+Each detected technology is displayed with its appropriate icon in the project list.
 
 The extension supports two ways to specify project folders:
 
@@ -163,6 +175,16 @@ On Windows, Git Bash style paths (e.g., `/c/Users/YourName/Projects`) are automa
 
 ## 📋 Release Notes
 
+### 0.0.6
+
+- Added detection for additional frameworks and technologies:
+  - PHP Frameworks: Laravel, Symfony, WordPress, Yii, Zend
+  - Python: Django
+  - JavaScript: Enhanced React detection
+  - Ruby: Improved detection logic
+- Improved framework detection algorithm with subdirectory checking
+- Added custom icons for frameworks not included in standard Devicon set
+
 ### 0.0.5
 
 - Added ignored folders configuration to exclude system folders and build artifacts
@@ -171,6 +193,8 @@ On Windows, Git Bash style paths (e.g., `/c/Users/YourName/Projects`) are automa
 - Added support for technology-specific icons using Devicon
 - Improved UI with better icon display and layout
 - Enhanced documentation with clearer feature overview
+- Added support for tilde expansion in paths (e.g., ~/projects) for Linux and macOS users
+- Simplified keyboard shortcuts to use only Ctrl+Shift+Space
 
 ### 0.0.4
 

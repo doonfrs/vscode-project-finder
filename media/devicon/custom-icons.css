@@ -18,4 +18,40 @@
     color: #90a4ae;
 }
 
+/* Yii Framework */
+.devicon-yii-plain {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    position: relative;
+}
+
+.devicon-yii-plain:before {
+    content: "Y";
+    font-style: normal;
+    font-weight: bold;
+}
+
+.devicon-yii-plain.colored {
+    color: #3498db;
+}
+
+/* Zend Framework */
+.devicon-zend-plain {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    position: relative;
+}
+
+.devicon-zend-plain:before {
+    content: "Z";
+    font-style: normal;
+    font-weight: bold;
+}
+
+.devicon-zend-plain.colored {
+    color: #68b604;
+}
+
 /* Add any other missing icons here */ 

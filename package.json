@@ -2,7 +2,7 @@
     "name": "project-finder",
     "displayName": "Project Finder",
     "description": "Quickly find and open projects with a popup dialog",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "publisher": "doonfrs",
     "author": {
         "name": "Feras Abdalrahman"
@@ -48,11 +48,6 @@
             }
         ],
         "keybindings": [
-            {
-                "command": "project-finder.openProjectFinder",
-                "key": "shift+space",
-                "mac": "shift+space"
-            },
             {
                 "command": "project-finder.openProjectFinder",
                 "key": "ctrl+shift+space",

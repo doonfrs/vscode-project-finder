@@ -24,5 +24,11 @@ export const technologyToDeviconClass: Record<ProjectTechnology, string> = {
     [ProjectTechnology.cplusplus]: 'devicon-cplusplus-plain colored',
     [ProjectTechnology.c]: 'devicon-c-plain colored',
     [ProjectTechnology.docker]: 'devicon-docker-plain colored',
-    [ProjectTechnology.git]: 'devicon-git-plain colored'
+    [ProjectTechnology.git]: 'devicon-git-plain colored',
+    [ProjectTechnology.laravel]: 'devicon-laravel-plain colored',
+    [ProjectTechnology.django]: 'devicon-django-plain colored',
+    [ProjectTechnology.symfony]: 'devicon-symfony-plain colored',
+    [ProjectTechnology.wordpress]: 'devicon-wordpress-plain colored',
+    [ProjectTechnology.yii]: 'devicon-yii-plain colored',
+    [ProjectTechnology.zend]: 'devicon-zend-plain colored'
 }; 

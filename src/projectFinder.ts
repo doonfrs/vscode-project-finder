@@ -320,12 +320,27 @@ export class ProjectFinderProvider {
   }
 
   /**
+   * Expand tilde in paths to the user's home directory
+   * e.g., ~/projects -> /home/username/projects
+   */
+  private expandTildePath(folderPath: string): string {
+    if (folderPath.startsWith('~')) {
+      const homedir = os.homedir();
+      return path.join(homedir, folderPath.substring(1));
+    }
+    return folderPath;
+  }
+
+  /**
    * Get list of projects from configured folders
    */
   private async getProjects(): Promise<ProjectItem[]> {
     const projects: ProjectItem[] = [];
 
     for (let folder of this.projectFolders) {
+      // Expand tilde in paths
+      folder = this.expandTildePath(folder);
+      
       // Convert Git Bash style paths to Windows paths
       folder = this.convertGitBashPath(folder);
       

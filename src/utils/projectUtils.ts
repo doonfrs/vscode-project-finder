@@ -25,7 +25,13 @@ export enum ProjectTechnology {
     cplusplus = 'cplusplus',
     c = 'c',
     docker = 'docker',
-    git = 'git'
+    git = 'git',
+    laravel = 'laravel',
+    django = 'django',
+    symfony = 'symfony',
+    wordpress = 'wordpress',
+    yii = 'yii',
+    zend = 'zend'
 }
 
 /**
@@ -51,7 +57,13 @@ const technologyRules: { [key in ProjectTechnology]?: string[] } = {
     [ProjectTechnology.cplusplus]: ['.cpp', '.hpp', 'CMakeLists.txt'],
     [ProjectTechnology.c]: ['.c', '.h'],
     [ProjectTechnology.docker]: ['Dockerfile', 'docker-compose.yml'],
-    [ProjectTechnology.git]: ['.git']
+    [ProjectTechnology.git]: ['.git'],
+    [ProjectTechnology.laravel]: ['artisan', 'app/Http/Controllers', 'app/Providers/RouteServiceProvider.php'],
+    [ProjectTechnology.django]: ['manage.py', 'django', 'settings.py', 'wsgi.py', 'asgi.py'],
+    [ProjectTechnology.symfony]: ['symfony.lock', 'symfony', 'bin/console', 'config/bundles.php'],
+    [ProjectTechnology.wordpress]: ['wp-config.php', 'wp-content', 'wp-admin', 'wp-includes'],
+    [ProjectTechnology.yii]: ['yii', 'config/web.php', 'config/console.php'],
+    [ProjectTechnology.zend]: ['zend', 'module/Application', 'config/application.config.php']
 };
 
 /**
@@ -78,7 +90,13 @@ export const technologyIcons: { [key in ProjectTechnology]: string } = {
     [ProjectTechnology.cplusplus]: '🔧',
     [ProjectTechnology.c]: '©️',
     [ProjectTechnology.docker]: '🐳',
-    [ProjectTechnology.git]: '📊'
+    [ProjectTechnology.git]: '📊',
+    [ProjectTechnology.laravel]: '🔺',
+    [ProjectTechnology.django]: '🐍',
+    [ProjectTechnology.symfony]: '🎵',
+    [ProjectTechnology.wordpress]: '📰',
+    [ProjectTechnology.yii]: '🔶',
+    [ProjectTechnology.zend]: '🔷'
 };
 
 /**
@@ -94,6 +112,45 @@ export function detectProjectTechnology(projectPath: string): ProjectTechnology 
 
         // Get all files in the root directory
         const files = fs.readdirSync(projectPath);
+        
+        // Check for specific framework files first
+        
+        // Laravel detection
+        if (files.includes('artisan')) {
+            return ProjectTechnology.laravel;
+        }
+        
+        // WordPress detection
+        if (files.includes('wp-config.php') || files.includes('wp-content')) {
+            return ProjectTechnology.wordpress;
+        }
+        
+        // Django detection
+        if (files.includes('manage.py')) {
+            try {
+                const manageContent = fs.readFileSync(path.join(projectPath, 'manage.py'), 'utf8');
+                if (manageContent.includes('django')) {
+                    return ProjectTechnology.django;
+                }
+            } catch (error) {
+                // Continue with other detection methods
+            }
+        }
+        
+        // Symfony detection
+        if (files.includes('symfony.lock') || files.includes('bin/console')) {
+            return ProjectTechnology.symfony;
+        }
+        
+        // Yii detection
+        if (files.includes('yii') || (files.includes('config') && fs.existsSync(path.join(projectPath, 'config/web.php')))) {
+            return ProjectTechnology.yii;
+        }
+        
+        // Zend detection
+        if (files.includes('config') && fs.existsSync(path.join(projectPath, 'config/application.config.php'))) {
+            return ProjectTechnology.zend;
+        }
         
         // Check for package.json to read dependencies
         if (files.includes('package.json')) {
@@ -124,6 +181,11 @@ export function detectProjectTechnology(projectPath: string): ProjectTechnology 
                 console.error('Error reading package.json:', error);
             }
         }
+        
+        // Ruby detection
+        if (files.includes('Gemfile') || files.some(file => file.endsWith('.rb'))) {
+            return ProjectTechnology.ruby;
+        }
 
         // Check for specific files to determine technology
         for (const [tech, indicators] of Object.entries(technologyRules)) {
@@ -138,6 +200,25 @@ export function detectProjectTechnology(projectPath: string): ProjectTechnology 
                     // Check for exact file/directory match
                     if (files.includes(indicator)) {
                         return tech as ProjectTechnology;
+                    }
+                    
+                    // Check for subdirectories
+                    if (indicator.includes('/')) {
+                        const parts = indicator.split('/');
+                        let currentPath = projectPath;
+                        let exists = true;
+                        
+                        for (const part of parts) {
+                            currentPath = path.join(currentPath, part);
+                            if (!fs.existsSync(currentPath)) {
+                                exists = false;
+                                break;
+                            }
+                        }
+                        
+                        if (exists) {
+                            return tech as ProjectTechnology;
+                        }
                     }
                 }
             }
