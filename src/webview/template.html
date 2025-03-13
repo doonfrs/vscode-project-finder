@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Finder</title>
+    <style>
+        :root {
+            --background-color: {{background-color}};
+            --foreground-color: {{foreground-color}};
+            --item-hover-color: {{item-hover-color}};
+            --item-selected-color: {{item-selected-color}};
+            --border-color: {{border-color}};
+            --button-background: {{button-background}};
+            --button-foreground: white;
+            --button-hover-background: {{button-hover-background}};
+            --header-background: {{header-background}};
+            --shadow-color: {{shadow-color}};
+            --card-background: {{card-background}};
+            --search-background: {{search-background}};
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+            padding: 0;
+            margin: 0;
+            color: var(--foreground-color);
+            background-color: var(--background-color);
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 0;
+            box-sizing: border-box;
+            max-width: 800px;
+            margin: 0 auto;
+            box-shadow: 0 0 10px var(--shadow-color);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .header {
+            background-color: var(--header-background);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .header-title {
+            font-weight: bold;
+            font-size: 16px;
+            flex: 1;
+        }
+        .search-container {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--search-background);
+        }
+        #searchInput {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            background-color: var(--search-background);
+            color: var(--foreground-color);
+            border-radius: 8px;
+            outline: none;
+            font-size: 14px;
+        }
+        .project-list {
+            flex: 1;
+            overflow-y: auto;
+            max-height: 60vh;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+            padding: 20px;
+        }
+        .project-item {
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: var(--card-background);
+            transition: all 0.2s ease;
+            position: relative;
+            text-align: center;
+            height: 120px;
+            justify-content: space-between;
+        }
+        .project-item:hover {
+            background-color: var(--item-hover-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .project-item.selected {
+            background-color: var(--item-selected-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        .project-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 40px;
+        }
+        .project-icon i {
+            font-size: 36px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .project-name {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 5px;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .project-path {
+            font-size: 11px;
+            opacity: 0.7;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .favorite-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: opacity 0.2s ease;
+            background: none;
+            border: none;
+            color: var(--foreground-color);
+            padding: 5px;
+        }
+        .favorite-button:hover {
+            opacity: 1;
+        }
+        .favorite-button.active {
+            opacity: 1;
+            color: gold;
+        }
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 20px;
+            border-top: 1px solid var(--border-color);
+            background-color: var(--header-background);
+        }
+        .mode-toggle {
+            display: flex;
+            align-items: center;
+        }
+        .button {
+            background-color: var(--button-background);
+            color: var(--button-foreground);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            outline: none;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+        .button:hover {
+            background-color: var(--button-hover-background);
+        }
+        .button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .icon {
+            margin-right: 8px;
+        }
+        .close-button {
+            cursor: pointer;
+            opacity: 0.7;
+            font-size: 16px;
+        }
+        .close-button:hover {
+            opacity: 1;
+        }
+        .status {
+            font-size: 12px;
+            margin-top: 8px;
+            color: var(--foreground-color);
+            opacity: 0.8;
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+            margin-right: 10px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border-color);
+            transition: .4s;
+            border-radius: 20px;
+        }
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .toggle-slider {
+            background-color: var(--button-background);
+        }
+        input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+        .keyboard-hint {
+            font-size: 11px;
+            opacity: 0.7;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-title">Project Finder</div>
+            <div class="close-button" id="closeButton">✕</div>
+        </div>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Type to search projects...">
+            <div class="status" id="statusText">Found {{projects-count}} projects</div>
+        </div>
+        <div class="project-list" id="projectList">
+            {{projects-html}}
+        </div>
+        <div class="controls">
+            <div class="mode-toggle">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="newWindowToggle" {{new-window-checked}}>
+                    <span class="toggle-slider"></span>
+                </label>
+                <label for="newWindowToggle">Open in New Window</label>
+                <span class="keyboard-hint">(Shift+Enter)</span>
+            </div>
+            <div>
+                <button class="button" id="openButton" disabled>
+                    <span class="icon">📂</span>Open Project
+                </button>
+            </div>
+        </div>
+    </div>
+    <script>
+        (function() {
+            // State
+            let selectedIndex = -1;
+            let isNewWindowMode = "{{is-new-window-mode}}" === "true";
+            let favorites = JSON.parse(localStorage.getItem('projectFinderFavorites') || '{}');
+            const vscode = acquireVsCodeApi();
+            
+            // Elements
+            const projectList = document.getElementById('projectList');
+            const projectItems = document.querySelectorAll('.project-item');
+            const searchInput = document.getElementById('searchInput');
+            const openButton = document.getElementById('openButton');
+            const newWindowToggle = document.getElementById('newWindowToggle');
+            const closeButton = document.getElementById('closeButton');
+            const statusText = document.getElementById('statusText');
+            
+            // Initialize focus on search input
+            searchInput.focus();
+            
+            // Select the first project by default
+            if (projectItems.length > 0) {
+                selectProject(0);
+            }
+            
+            // Handle project item selection
+            projectList.addEventListener('click', (event) => {
+                const projectItem = event.target.closest('.project-item');
+                if (projectItem) {
+                    selectProject(parseInt(projectItem.dataset.index));
+                }
+                
+                // Check if favorite button was clicked
+                const favoriteButton = event.target.closest('.favorite-button');
+                if (favoriteButton) {
+                    event.stopPropagation(); // Prevent selecting the project
+                    toggleFavorite(favoriteButton.dataset.path);
+                }
+            });
+            
+            // Handle double-click to open project
+            projectList.addEventListener('dblclick', (event) => {
+                const projectItem = event.target.closest('.project-item');
+                if (projectItem && !event.target.closest('.favorite-button')) {
+                    const index = parseInt(projectItem.dataset.index);
+                    selectProject(index);
+                    openSelectedProject();
+                }
+            });
+            
+            // Handle search input
+            searchInput.addEventListener('input', () => {
+                const searchTerm = searchInput.value.toLowerCase();
+                let visibleCount = 0;
+                let firstVisibleIndex = -1;
+                
+                projectItems.forEach((item, index) => {
+                    const projectName = item.querySelector('.project-name').textContent.toLowerCase();
+                    const projectPath = item.querySelector('.project-path').textContent.toLowerCase();
+                    const isVisible = projectName.includes(searchTerm) || projectPath.includes(searchTerm);
+                    item.style.display = isVisible ? 'flex' : 'none';
+                    
+                    if (isVisible) {
+                        visibleCount++;
+                        if (firstVisibleIndex === -1) {
+                            firstVisibleIndex = index;
+                        }
+                    }
+                });
+                
+                // Update status text
+                statusText.textContent = searchTerm 
+                    ? 'Found ' + visibleCount + ' matching projects'
+                    : 'Found ' + projectItems.length + ' projects';
+                
+                // Select the first visible project
+                if (firstVisibleIndex !== -1) {
+                    selectProject(firstVisibleIndex);
+                } else {
+                    // No visible projects, clear selection
+                    selectedIndex = -1;
+                    openButton.disabled = true;
+                    projectItems.forEach(item => item.classList.remove('selected'));
+                }
+            });
+            
+            // Handle keyboard navigation
+            document.addEventListener('keydown', (event) => {
+                const visibleItems = Array.from(projectItems).filter(
+                    item => item.style.display !== 'none'
+                );
+                
+                switch (event.key) {
+                    case 'ArrowDown':
+                    case 'ArrowRight':
+                        event.preventDefault();
+                        navigateProjects(1, visibleItems);
+                        break;
+                    case 'ArrowUp':
+                    case 'ArrowLeft':
+                        event.preventDefault();
+                        navigateProjects(-1, visibleItems);
+                        break;
+                    case 'Enter':
+                        if (selectedIndex >= 0) {
+                            // Check if Shift key is pressed for new window
+                            const useNewWindow = event.shiftKey || isNewWindowMode;
+                            openSelectedProject(useNewWindow);
+                        }
+                        break;
+                    case 'Escape':
+                        vscode.postMessage({ command: 'close' });
+                        break;
+                }
+            });
+            
+            // Handle new window toggle
+            newWindowToggle.addEventListener('change', () => {
+                isNewWindowMode = newWindowToggle.checked;
+                vscode.postMessage({ 
+                    command: 'toggleNewWindowMode'
+                });
+            });
+            
+            // Handle open button click
+            openButton.addEventListener('click', () => openSelectedProject());
+            
+            // Handle close button click
+            closeButton.addEventListener('click', () => {
+                vscode.postMessage({ command: 'close' });
+            });
+            
+            // Function to toggle favorite status
+            function toggleFavorite(projectPath) {
+                if (favorites[projectPath]) {
+                    delete favorites[projectPath];
+                } else {
+                    favorites[projectPath] = true;
+                }
+                
+                // Save to localStorage
+                localStorage.setItem('projectFinderFavorites', JSON.stringify(favorites));
+                
+                // Update UI
+                updateFavoriteButtons();
+                
+                // Notify extension about favorites change
+                vscode.postMessage({
+                    command: 'updateFavorites',
+                    favorites: favorites
+                });
+                
+                // Re-sort projects to show favorites first
+                sortProjectsByFavorites();
+            }
+            
+            // Function to update favorite buttons
+            function updateFavoriteButtons() {
+                document.querySelectorAll('.favorite-button').forEach(button => {
+                    const projectPath = button.dataset.path;
+                    if (favorites[projectPath]) {
+                        button.classList.add('active');
+                        button.innerHTML = '★';
+                    } else {
+                        button.classList.remove('active');
+                        button.innerHTML = '☆';
+                    }
+                });
+            }
+            
+            // Function to sort projects by favorites
+            function sortProjectsByFavorites() {
+                const projectsArray = Array.from(projectItems);
+                
+                // Sort projects: favorites first, then alphabetically
+                projectsArray.sort((a, b) => {
+                    const aPath = a.dataset.path;
+                    const bPath = b.dataset.path;
+                    const aFav = favorites[aPath] ? 1 : 0;
+                    const bFav = favorites[bPath] ? 1 : 0;
+                    
+                    // First sort by favorite status
+                    if (aFav !== bFav) {
+                        return bFav - aFav;
+                    }
+                    
+                    // Then sort alphabetically
+                    const aName = a.querySelector('.project-name').textContent;
+                    const bName = b.querySelector('.project-name').textContent;
+                    return aName.localeCompare(bName);
+                });
+                
+                // Reorder DOM elements
+                projectsArray.forEach(item => {
+                    projectList.appendChild(item);
+                });
+                
+                // Update indices
+                projectsArray.forEach((item, index) => {
+                    item.dataset.index = index;
+                });
+                
+                // Select the first project
+                if (projectsArray.length > 0) {
+                    selectProject(0);
+                }
+            }
+            
+            // Function to select a project
+            function selectProject(index) {
+                // Clear previous selection
+                projectItems.forEach(item => item.classList.remove('selected'));
+                
+                // Set new selection
+                selectedIndex = index;
+                if (selectedIndex >= 0) {
+                    projectItems[selectedIndex].classList.add('selected');
+                    openButton.disabled = false;
+                    
+                    // Ensure the selected item is visible
+                    projectItems[selectedIndex].scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'nearest' 
+                    });
+                } else {
+                    openButton.disabled = true;
+                }
+            }
+            
+            // Function to navigate projects with keyboard
+            function navigateProjects(direction, visibleItems) {
+                if (visibleItems.length === 0) return;
+                
+                let currentIndex = -1;
+                if (selectedIndex >= 0) {
+                    currentIndex = visibleItems.findIndex(
+                        item => parseInt(item.dataset.index) === selectedIndex
+                    );
+                }
+                
+                let newIndex = currentIndex + direction;
+                if (newIndex < 0) newIndex = visibleItems.length - 1;
+                if (newIndex >= visibleItems.length) newIndex = 0;
+                
+                if (newIndex >= 0 && newIndex < visibleItems.length) {
+                    selectProject(parseInt(visibleItems[newIndex].dataset.index));
+                }
+            }
+            
+            // Function to open the selected project
+            function openSelectedProject(forceNewWindow) {
+                if (selectedIndex >= 0) {
+                    const selectedItem = projectItems[selectedIndex];
+                    vscode.postMessage({
+                        command: 'openProject',
+                        projectPath: selectedItem.dataset.path,
+                        newWindow: forceNewWindow !== undefined ? forceNewWindow : isNewWindowMode
+                    });
+                }
+            }
+            
+            // Handle messages from the extension
+            window.addEventListener('message', event => {
+                const message = event.data;
+                switch (message.command) {
+                    case 'updateNewWindowMode':
+                        isNewWindowMode = message.isNewWindowMode;
+                        newWindowToggle.checked = isNewWindowMode;
+                        break;
+                }
+            });
+            
+            // Initialize favorite buttons
+            updateFavoriteButtons();
+            
+            // Initial sort by favorites
+            sortProjectsByFavorites();
+        })();
+    </script>
+</body>
+</html> 

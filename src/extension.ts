@@ -10,7 +10,7 @@ export function activate(context: vscode.ExtensionContext) {
   // Register the command that opens the project finder
   const disposable = vscode.commands.registerCommand('project-finder.openProjectFinder', () => {
     console.log('Project Finder command triggered');
-    projectFinderProvider.showQuickPick();
+    projectFinderProvider.showProjectFinder();
   });
 
   // Register the command to toggle new window mode
@@ -25,46 +25,30 @@ export function activate(context: vscode.ExtensionContext) {
   const initialFolders = initialConfig.get('projectFolders', []);
   const initialIndicators = initialConfig.get('projectIndicators', []);
   const initialEnableIndicators = initialConfig.get('enableProjectIndicators', false);
+  const initialUseNativeUI = initialConfig.get('useNativeUI', false);
   console.log('Initial projectFinder.projectFolders:', initialFolders);
   console.log('Initial projectFinder.projectIndicators:', initialIndicators);
   console.log('Initial projectFinder.enableProjectIndicators:', initialEnableIndicators);
+  console.log('Initial projectFinder.useNativeUI:', initialUseNativeUI);
 
-  // Listen for configuration changes with enhanced logging
-  const configListener = vscode.workspace.onDidChangeConfiguration(e => {
-    console.log('Configuration changed event fired');
-    
-    // Check if our configuration was affected
-    const isAffected = e.affectsConfiguration('projectFinder');
-    const isFoldersAffected = e.affectsConfiguration('projectFinder.projectFolders');
-    const isIndicatorsAffected = e.affectsConfiguration('projectFinder.projectIndicators');
-    const isEnableIndicatorsAffected = e.affectsConfiguration('projectFinder.enableProjectIndicators');
-    
-    console.log('projectFinder affected:', isAffected);
-    console.log('projectFinder.projectFolders affected:', isFoldersAffected);
-    console.log('projectFinder.projectIndicators affected:', isIndicatorsAffected);
-    console.log('projectFinder.enableProjectIndicators affected:', isEnableIndicatorsAffected);
-    
-    if (isFoldersAffected || isIndicatorsAffected || isEnableIndicatorsAffected) {
+  // Listen for configuration changes
+  const configListener = vscode.workspace.onDidChangeConfiguration(event => {
+    if (event.affectsConfiguration('projectFinder')) {
+      console.log('Project Finder configuration changed');
+      
       // Get the updated configuration
       const config = vscode.workspace.getConfiguration('projectFinder');
+      const folders = config.get('projectFolders', []);
+      const indicators = config.get('projectIndicators', []);
+      const enableIndicators = config.get('enableProjectIndicators', false);
+      const useNativeUI = config.get('useNativeUI', false);
       
-      if (isFoldersAffected) {
-        const folders = config.get('projectFolders', []);
-        console.log('Updated projectFinder.projectFolders:', folders);
-      }
+      console.log('Updated projectFinder.projectFolders:', folders);
+      console.log('Updated projectFinder.projectIndicators:', indicators);
+      console.log('Updated projectFinder.enableProjectIndicators:', enableIndicators);
+      console.log('Updated projectFinder.useNativeUI:', useNativeUI);
       
-      if (isIndicatorsAffected) {
-        const indicators = config.get('projectIndicators', []);
-        console.log('Updated projectFinder.projectIndicators:', indicators);
-      }
-      
-      if (isEnableIndicatorsAffected) {
-        const enableIndicators = config.get('enableProjectIndicators', false);
-        console.log('Updated projectFinder.enableProjectIndicators:', enableIndicators);
-      }
-      
-      // Refresh the project folders and indicators
-      console.log('Refreshing project settings...');
+      // Refresh the project finder provider
       projectFinderProvider.refreshProjectFolders();
     }
   });
@@ -76,7 +60,12 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.window.showInformationMessage('Project Finder: Settings refreshed');
   });
 
-  context.subscriptions.push(disposable, toggleNewWindowCommand, configListener, refreshCommand);
+  context.subscriptions.push(
+    disposable,
+    toggleNewWindowCommand, 
+    configListener, 
+    refreshCommand
+  );
 }
 
 // This method is called when the extension is deactivated

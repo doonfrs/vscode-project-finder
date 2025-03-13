@@ -1,0 +1,21 @@
+/* Custom icons for technologies not included in Devicon */
+
+/* Folder icon for unknown project types */
+.devicon-folder-plain {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    position: relative;
+}
+
+.devicon-folder-plain:before {
+    content: "📁";
+    font-style: normal;
+}
+
+/* Colored versions */
+.devicon-folder-plain.colored {
+    color: #90a4ae;
+}
+
+/* Add any other missing icons here */ 

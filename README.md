@@ -12,35 +12,28 @@ Ever felt frustrated trying to find that project you worked on last week? Tired 
 
 **Project Finder** solves the problem VS Code never addressed - quick access to ALL your projects with just a keyboard shortcut!
 
-- **Lightning Fast** - Access any project in milliseconds with Shift+Space
-- **Smart Detection** - Automatically identifies real projects (no more digging through random folders)
-- **Workflow Optimized** - Stay in your coding flow without interruptions
-- **Cross-Platform** - Works on Windows, macOS, and Linux with the same experience
+## ✨ Key Features
 
-Stop wasting time hunting for projects and get back to what matters - writing great code!
+- **⌨️ Keyboard-First Approach** - Access any project in milliseconds with Shift+Space
+- **🔍 Smart Project Detection** - Automatically identifies real projects with technology-specific icons
+- **⭐ Favorites System** - Mark and prioritize your most-used projects
+- **🪟 Flexible Window Control** - Open in same window (Enter) or new window (Shift+Enter)
+- **🎨 Modern UI** - Windows 11-style grid layout with technology-specific icons
+- **🔄 Smart Filtering** - Automatically ignores system folders and build artifacts
+- **🌐 Cross-Platform** - Works seamlessly on Windows, macOS, and Linux
 
-## Features
+## 📸 Screenshots
 
-- Quick access to your projects with simple keyboard shortcuts (Shift+Space or Ctrl+Shift+Space)
-- Configurable list of project folders to search
-- Automatic detection of valid projects (looks for .git, package.json, .vscode, etc.)
-- Seamless integration with VS Code's folder opening functionality
-- Open projects in the same window or a new window (using Shift+Enter)
+![Project Finder UI](images/project-finder-demo.gif)
 
-## Support
-
-If you find this extension helpful, consider buying me a coffee:
-
-[![Buy Me A Coffee](https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png)](https://buymeacoffee.com/doonfrs)
-
-## Installation
+## 🛠️ Installation
 
 1. Launch VS Code
 2. Go to Extensions (Ctrl+Shift+X)
 3. Search for "Project Finder"
 4. Click Install
 
-## Configuration
+## ⚙️ Configuration
 
 Before using Project Finder, you need to configure the folders where your projects are located:
 
@@ -75,7 +68,26 @@ For Linux/macOS:
 >
 > **Windows users:** Git Bash style paths are also supported (e.g., `/c/Users/YourName/Projects`).
 
-## Usage
+## 🎮 Usage
+
+### Custom UI (Default)
+
+1. Press Shift+Space or Ctrl+Shift+Space anywhere in VS Code
+2. Use the search box to filter projects
+3. Click on a project to select it, or use arrow keys for navigation
+4. Press Enter to open in the same window, or Shift+Enter to open in a new window
+5. Toggle the "Open in New Window" switch to control window behavior
+6. Click the star icon on any project to mark it as a favorite (favorites always appear at the top)
+
+### Native Quick Pick UI
+
+To enable the native VS Code Quick Pick UI:
+
+1. Open VS Code Settings (File > Preferences > Settings)
+2. Search for "Project Finder: Use Native UI"
+3. Check the box to enable the native UI
+
+Once enabled:
 
 1. Press Shift+Space or Ctrl+Shift+Space anywhere in VS Code
 2. Select a project from the dropdown list
@@ -87,11 +99,13 @@ For Linux/macOS:
 ### Organize Your Projects Like a Pro
 
 - **Development Hub**: Create a central development folder with `/*` wildcard
+
   ```json
   "projectFinder.projectFolders": ["/home/username/dev/*"]
   ```
 
 - **Mixed Approach**: Combine specific projects with wildcard directories
+
   ```json
   "projectFinder.projectFolders": [
     "/home/username/dev/*",           // All projects in dev folder
@@ -101,6 +115,7 @@ For Linux/macOS:
   ```
 
 - **Git Bash on Windows**: Use Unix-style paths for consistency across platforms
+
   ```json
   "projectFinder.projectFolders": [
     "/c/Users/YourName/Projects/*",
@@ -117,7 +132,7 @@ For Linux/macOS:
 5. Hold `Shift` while pressing `Enter` to open in new window
 6. Press `Alt+N` to toggle New Window Mode
 
-## How It Works
+## 🧩 How It Works
 
 Project Finder scans the configured folders for valid projects. A folder is considered a valid project if it contains any of the following:
 
@@ -136,33 +151,48 @@ The extension supports two ways to specify project folders:
 
 On Windows, Git Bash style paths (e.g., `/c/Users/YourName/Projects`) are automatically converted to Windows paths (e.g., `C:/Users/YourName/Projects`).
 
-## ⚡ Why Project Finder?
+## 🔧 Extension Settings
 
-| Feature | Project Finder | VS Code Built-in | Other Extensions |
-|---------|---------------|------------------|------------------|
-| Keyboard-first approach | ✅ | ❌ | ⚠️ Limited |
-| Smart project detection | ✅ | ❌ | ⚠️ Some |
-| Wildcard folder support | ✅ | ❌ | ❌ |
-| Git Bash path support | ✅ | ❌ | ❌ |
-| New window toggle | ✅ | ⚠️ Requires extra steps | ⚠️ Limited |
-| Shift+Enter shortcut | ✅ | ❌ | ❌ |
-| Lightweight | ✅ | ✅ | ⚠️ Varies |
+| Setting | Description |
+|---------|-------------|
+| `projectFinder.projectFolders` | Array of folder paths to search for projects |
+| `projectFinder.enableProjectIndicators` | Enable project indicators to filter directories |
+| `projectFinder.projectIndicators` | Files or folders that indicate a valid project |
+| `projectFinder.useNativeUI` | Use VS Code's native QuickPick UI instead of the custom UI |
+| `projectFinder.ignoredFolders` | List of folders and files to ignore when searching for projects |
 
-Project Finder was built by developers who were tired of the friction in the standard VS Code workflow. We wanted something that felt like it should have been built into VS Code from the beginning.
+## 📋 Release Notes
 
-## Requirements
+### 0.0.5
 
-- Visual Studio Code version 1.75.0 or higher
+- Added ignored folders configuration to exclude system folders and build artifacts
+- Fixed icon display issues with proper font loading
+- Fixed duplicate popup issue when pressing the shortcut multiple times
+- Added support for technology-specific icons using Devicon
+- Improved UI with better icon display and layout
+- Enhanced documentation with clearer feature overview
 
-## Extension Settings
+### 0.0.4
 
-- `projectFinder.projectFolders`: Array of folder paths to search for projects
+- Added Windows 11-style UI with grid layout and project icons
+- Added automatic project technology detection
+- Added favorites feature to mark and prioritize frequently used projects
+- Improved Shift+Enter functionality to open projects in a new window
+- Made the custom UI the default experience
+- Renamed setting from `useCustomUI` to `useNativeUI` (inverted logic)
+- Added automatic selection of the first project in filtered results
+- Enhanced keyboard navigation with arrow keys
 
-## Known Issues
+### 0.0.3
 
-None at the moment.
-
-## Release Notes
+- Added custom popup dialog UI option with enhanced features:
+  - Modern, VS Code-themed interface
+  - Improved search functionality with result count
+  - Double-click to open projects
+  - Keyboard navigation support
+  - Checkbox for new window toggle
+  - Configuration option to choose between QuickPick and custom UI
+  - Uses the same keyboard shortcuts for both UI options
 
 ### 0.0.2
 
@@ -176,7 +206,22 @@ None at the moment.
 
 Initial release of Project Finder
 
----
+## ⚡ Why Project Finder?
+
+| Feature | Project Finder | VS Code Built-in | Other Extensions |
+|---------|---------------|------------------|------------------|
+| Keyboard-first approach | ✅ | ❌ | ⚠️ Limited |
+| Smart project detection | ✅ | ❌ | ⚠️ Some |
+| Technology-specific icons | ✅ | ❌ | ❌ |
+| Favorites system | ✅ | ❌ | ❌ |
+| Wildcard folder support | ✅ | ❌ | ❌ |
+| Git Bash path support | ✅ | ❌ | ❌ |
+| New window toggle | ✅ | ⚠️ Requires extra steps | ⚠️ Limited |
+| Shift+Enter shortcut | ✅ | ❌ | ❌ |
+| System folder filtering | ✅ | ❌ | ❌ |
+| Lightweight | ✅ | ✅ | ⚠️ Varies |
+
+Project Finder was built by developers who were tired of the friction in the standard VS Code workflow. We wanted something that felt like it should have been built into VS Code from the beginning.
 
 ## 👥 Community & Contributions
 
@@ -192,7 +237,13 @@ Project Finder is an open-source project that thrives on community feedback and 
 
 Join our growing community of developers who value efficiency and productivity in their VS Code workflow!
 
-## For Development
+## ☕ Support
+
+If you find this extension helpful, consider buying me a coffee:
+
+[![Buy Me A Coffee](https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png)](https://buymeacoffee.com/doonfrs)
+
+## 🧑‍💻 For Development
 
 ### Building the Extension
 
@@ -205,6 +256,10 @@ Join our growing community of developers who value efficiency and productivity i
 
 - The extension uses the modern `onStartupFinished` activation event, which is more efficient than the older command-based activation events
 - VS Code 1.75.0+ automatically generates activation events based on contribution points, but the `vsce` packaging tool may still require an explicit `activationEvents` property
+- The extension offers two UI options:
+  - Quick Pick UI: Uses VS Code's native QuickPick API
+  - Custom Popup Dialog: Uses WebView Panel with popup styling for a fully customizable interface
+- The WebView HTML content is stored in a separate file for easier maintenance and customization
 
 ### Publishing
 

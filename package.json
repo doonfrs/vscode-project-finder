@@ -2,7 +2,7 @@
     "name": "project-finder",
     "displayName": "Project Finder",
     "description": "Quickly find and open projects with a popup dialog",
-    "version": "0.0.2",
+    "version": "0.0.5",
     "publisher": "doonfrs",
     "author": {
         "name": "Feras Abdalrahman"
@@ -89,6 +89,38 @@
                         "go.mod"
                     ],
                     "description": "Files or folders that indicate a valid project. A folder is considered a project if it contains any of these files/folders."
+                },
+                "projectFinder.useNativeUI": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Use VS Code's native QuickPick UI instead of the custom UI. The custom UI provides a more feature-rich experience with project icons and favorites."
+                },
+                "projectFinder.ignoredFolders": {
+                    "type": "array",
+                    "default": [
+                        "$RECYCLE.BIN",
+                        "System Volume Information",
+                        "Thumbs.db",
+                        ".Trash",
+                        ".DS_Store",
+                        "node_modules",
+                        ".git",
+                        ".idea",
+                        ".vscode",
+                        "dist",
+                        "build",
+                        "target",
+                        "bin",
+                        "obj",
+                        "out",
+                        "tmp",
+                        "temp",
+                        "logs",
+                        "coverage",
+                        ".next",
+                        ".nuxt"
+                    ],
+                    "description": "List of folders and files to ignore when searching for projects. These are common system folders and build artifacts across Windows, macOS, and Linux."
                 }
             }
         }

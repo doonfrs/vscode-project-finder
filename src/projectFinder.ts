@@ -2,10 +2,8 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-
-interface ProjectItem extends vscode.QuickPickItem {
-  path: string;
-}
+import { ProjectItem } from './types';
+import { getWebviewContent } from './webview/projectFinderWebview';
 
 export class ProjectFinderProvider {
   private context: vscode.ExtensionContext;
@@ -15,11 +13,18 @@ export class ProjectFinderProvider {
   private enableProjectIndicators = false;
   private hasLoadedFolders = false;
   private hasLoadedIndicators = false;
+  private useNativeUI = false; // Changed from useCustomUI to useNativeUI (inverted logic)
+  private favorites: { [key: string]: boolean } = {};
+  private activePanel: vscode.WebviewPanel | undefined;
+  private ignoredFolders: string[] = [];
 
   constructor(context: vscode.ExtensionContext) {
     this.context = context;
     this.loadProjectFolders();
     this.loadProjectIndicators();
+    this.loadUIPreference();
+    this.loadFavorites();
+    this.loadIgnoredFolders();
   }
 
   /**
@@ -35,6 +40,40 @@ export class ProjectFinderProvider {
    */
   public isNewWindowModeEnabled(): boolean {
     return this.isNewWindowMode;
+  }
+
+  /**
+   * Load UI preference from settings
+   */
+  private loadUIPreference(): void {
+    const config = vscode.workspace.getConfiguration('projectFinder');
+    this.useNativeUI = config.get<boolean>('useNativeUI', false);
+    console.log(`Using native UI: ${this.useNativeUI}`);
+  }
+
+  /**
+   * Load favorites from global state
+   */
+  private loadFavorites(): void {
+    this.favorites = this.context.globalState.get<{ [key: string]: boolean }>('projectFinderFavorites', {});
+    console.log(`Loaded ${Object.keys(this.favorites).length} favorite projects`);
+  }
+
+  /**
+   * Save favorites to global state
+   */
+  private saveFavorites(): void {
+    this.context.globalState.update('projectFinderFavorites', this.favorites);
+    console.log(`Saved ${Object.keys(this.favorites).length} favorite projects`);
+  }
+
+  /**
+   * Update favorites from WebView
+   */
+  public updateFavorites(favorites: { [key: string]: boolean }): void {
+    this.favorites = favorites;
+    this.saveFavorites();
+    console.log(`Updated favorites from WebView: ${Object.keys(this.favorites).length} items`);
   }
 
   /**
@@ -91,6 +130,39 @@ export class ProjectFinderProvider {
   }
 
   /**
+   * Load ignored folders from settings
+   */
+  private loadIgnoredFolders(): void {
+    const config = vscode.workspace.getConfiguration('projectFinder');
+    const defaultIgnoredFolders = [
+      '$RECYCLE.BIN',
+      'System Volume Information',
+      'Thumbs.db',
+      '.Trash',
+      '.DS_Store',
+      'node_modules',
+      '.git',
+      '.idea',
+      '.vscode',
+      'dist',
+      'build',
+      'target',
+      'bin',
+      'obj',
+      'out',
+      'tmp',
+      'temp',
+      'logs',
+      'coverage',
+      '.next',
+      '.nuxt'
+    ];
+    
+    this.ignoredFolders = config.get<string[]>('ignoredFolders', defaultIgnoredFolders);
+    console.log(`Loaded ${this.ignoredFolders.length} ignored folders from settings`);
+  }
+
+  /**
    * Refresh project folders and indicators from settings
    */
   public refreshProjectFolders(): void {
@@ -101,10 +173,27 @@ export class ProjectFinderProvider {
       .then(() => {
         this.loadProjectFolders();
         this.loadProjectIndicators();
+        this.loadUIPreference();
+        this.loadIgnoredFolders();
         console.log('Project folders and indicators refreshed successfully');
       }, (error) => {
         console.error('Error refreshing project settings:', error);
       });
+  }
+
+  /**
+   * Show the project finder UI
+   */
+  public async showProjectFinder() {
+    // Reload UI preference in case it changed
+    this.loadUIPreference();
+    
+    // Use the appropriate UI based on settings
+    if (!this.useNativeUI) {
+      await this.showCustomProjectPanel();
+    } else {
+      await this.showQuickPick();
+    }
   }
 
   /**
@@ -258,6 +347,12 @@ export class ProjectFinderProvider {
               if (entry.isDirectory()) {
                 const projectPath = path.join(actualFolderPath, entry.name);
                 
+                // Skip ignored folders
+                if (this.shouldIgnoreFolder(entry.name)) {
+                  console.log(`Skipping ignored folder: ${entry.name}`);
+                  continue;
+                }
+                
                 // Check if it's a valid project (has package.json, .git, etc.)
                 // Only check if project indicators are enabled
                 const isValidProject = !this.enableProjectIndicators || this.isValidProject(projectPath);
@@ -274,6 +369,13 @@ export class ProjectFinderProvider {
           } else {
             // For regular paths, add the folder itself as a project
             const folderName = path.basename(actualFolderPath);
+            
+            // Skip ignored folders
+            if (this.shouldIgnoreFolder(folderName)) {
+              console.log(`Skipping ignored folder: ${folderName}`);
+              continue;
+            }
+            
             projects.push({
               label: folderName,
               description: actualFolderPath,
@@ -288,7 +390,33 @@ export class ProjectFinderProvider {
       }
     }
 
-    return projects;
+    // Sort projects: favorites first, then alphabetically
+    return projects.sort((a, b) => {
+      const aFav = this.favorites[a.path] ? 1 : 0;
+      const bFav = this.favorites[b.path] ? 1 : 0;
+      
+      // First sort by favorite status
+      if (aFav !== bFav) {
+        return bFav - aFav;
+      }
+      
+      // Then sort alphabetically
+      return a.label.localeCompare(b.label);
+    });
+  }
+
+  /**
+   * Check if a folder should be ignored
+   */
+  private shouldIgnoreFolder(folderName: string): boolean {
+    return this.ignoredFolders.some(ignored => {
+      // Case-insensitive comparison for Windows
+      if (os.platform() === 'win32') {
+        return folderName.toLowerCase() === ignored.toLowerCase();
+      }
+      // Case-sensitive comparison for Unix-like systems
+      return folderName === ignored;
+    });
   }
 
   /**
@@ -317,5 +445,102 @@ export class ProjectFinderProvider {
       'workbench.action.openSettings',
       'projectFinder.projectFolders'
     );
+  }
+
+  /**
+   * Show a custom WebView panel for project selection as a popup dialog
+   */
+  public async showCustomProjectPanel() {
+    // If there's already an active panel, just reveal it instead of creating a new one
+    if (this.activePanel) {
+      this.activePanel.reveal(vscode.ViewColumn.Active, true);
+      return;
+    }
+
+    // Make sure we have the latest settings
+    if (!this.hasLoadedFolders) {
+      this.loadProjectFolders();
+    }
+    
+    if (!this.hasLoadedIndicators) {
+      this.loadProjectIndicators();
+    }
+    
+    const projects = await this.getProjects();
+    
+    if (projects.length === 0) {
+      vscode.window.showInformationMessage('No projects found. Please configure project folders in settings.');
+      this.openSettings();
+      return;
+    }
+
+    // Create and show a new webview panel as a popup dialog
+    const panel = vscode.window.createWebviewPanel(
+      'projectFinderPanel', // Identifies the type of the webview
+      'Project Finder', // Title displayed in the UI
+      {
+        viewColumn: vscode.ViewColumn.Active, // Show in the active editor column
+        preserveFocus: true // Keep focus on the current editor
+      },
+      {
+        enableScripts: true, // Enable JavaScript in the webview
+        localResourceRoots: [vscode.Uri.joinPath(this.context.extensionUri, 'media')],
+        retainContextWhenHidden: true // Keep the webview's context when hidden
+      }
+    );
+
+    // Store the active panel reference
+    this.activePanel = panel;
+
+    // Make it look more like a dialog
+    panel.webview.options = {
+      enableScripts: true,
+      enableCommandUris: true
+    };
+
+    // Get VS Code theme colors for native look and feel
+    const isLightTheme = vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.Light;
+
+    // Set the webview's initial HTML content
+    panel.webview.html = getWebviewContent(
+      projects, 
+      this.isNewWindowMode, 
+      isLightTheme, 
+      this.context.extensionUri,
+      panel.webview
+    );
+
+    // Handle messages from the webview
+    panel.webview.onDidReceiveMessage(
+      message => {
+        switch (message.command) {
+          case 'openProject':
+            this.openProject(message.projectPath, message.newWindow);
+            panel.dispose(); // Close the panel after selection
+            return;
+          case 'toggleNewWindowMode':
+            this.isNewWindowMode = !this.isNewWindowMode;
+            // Send updated state back to webview
+            panel.webview.postMessage({ 
+              command: 'updateNewWindowMode', 
+              isNewWindowMode: this.isNewWindowMode 
+            });
+            return;
+          case 'updateFavorites':
+            this.updateFavorites(message.favorites);
+            return;
+          case 'close':
+            panel.dispose(); // Close the panel
+            return;
+        }
+      },
+      undefined,
+      this.context.subscriptions
+    );
+
+    // Clear the active panel reference when the panel is disposed
+    panel.onDidDispose(() => {
+      this.activePanel = undefined;
+    }, null, this.context.subscriptions);
   }
 } 

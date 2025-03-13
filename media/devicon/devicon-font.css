@@ -1,0 +1,149 @@
+/* Font-face definitions for Devicon */
+@font-face {
+  font-family: 'devicon';
+  src: url('./fonts/devicon.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+/* Base icon styles */
+[class^="devicon-"], [class*=" devicon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'devicon' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Colored versions */
+.colored {
+  color: #e44d26;
+}
+
+/* JavaScript */
+.devicon-javascript-plain:before {
+  content: "\e90c";
+  color: #f7df1e;
+}
+
+/* TypeScript */
+.devicon-typescript-plain:before {
+  content: "\e920";
+  color: #007acc;
+}
+
+/* React */
+.devicon-react-original:before {
+  content: "\e61b";
+  color: #61dafb;
+}
+
+/* Vue.js */
+.devicon-vuejs-plain:before {
+  content: "\e925";
+  color: #4fc08d;
+}
+
+/* Angular */
+.devicon-angularjs-plain:before {
+  content: "\e608";
+  color: #dd0031;
+}
+
+/* Node.js */
+.devicon-nodejs-plain:before {
+  content: "\e618";
+  color: #83cd29;
+}
+
+/* Python */
+.devicon-python-plain:before {
+  content: "\e91d";
+  color: #3776ab;
+}
+
+/* Java */
+.devicon-java-plain:before {
+  content: "\e638";
+  color: #ea2d2e;
+}
+
+/* C# */
+.devicon-csharp-plain:before {
+  content: "\e60f";
+  color: #68217a;
+}
+
+/* PHP */
+.devicon-php-plain:before {
+  content: "\e61d";
+  color: #777bb3;
+}
+
+/* Go */
+.devicon-go-plain:before {
+  content: "\e624";
+  color: #00add8;
+}
+
+/* Rust */
+.devicon-rust-plain:before {
+  content: "\e6a8";
+  color: #000000;
+}
+
+/* Ruby */
+.devicon-ruby-plain:before {
+  content: "\e62b";
+  color: #cc342d;
+}
+
+/* Flutter */
+.devicon-flutter-plain:before {
+  content: "\e696";
+  color: #02569b;
+}
+
+/* Swift */
+.devicon-swift-plain:before {
+  content: "\e655";
+  color: #f05138;
+}
+
+/* Kotlin */
+.devicon-kotlin-plain:before {
+  content: "\e634";
+  color: #7f52ff;
+}
+
+/* C++ */
+.devicon-cplusplus-plain:before {
+  content: "\e646";
+  color: #00599c;
+}
+
+/* C */
+.devicon-c-plain:before {
+  content: "\e61e";
+  color: #a8b9cc;
+}
+
+/* Docker */
+.devicon-docker-plain:before {
+  content: "\e617";
+  color: #2496ed;
+}
+
+/* Git */
+.devicon-git-plain:before {
+  content: "\e602";
+  color: #f34f29;
+} 
