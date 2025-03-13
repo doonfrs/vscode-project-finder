@@ -8,11 +8,14 @@ export function activate(context: vscode.ExtensionContext) {
   const projectFinderProvider = new ProjectFinderProvider(context);
 
   // Register the command that opens the project finder
-  let disposable = vscode.commands.registerCommand('project-finder.openProjectFinder', () => {
+  const disposable = vscode.commands.registerCommand('project-finder.openProjectFinder', () => {
     projectFinderProvider.showQuickPick();
   });
 
   context.subscriptions.push(disposable);
 }
 
-export function deactivate() {} 
+// This method is called when the extension is deactivated
+export function deactivate() {
+  // Nothing to clean up
+} 

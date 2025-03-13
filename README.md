@@ -2,12 +2,20 @@
 
 A Visual Studio Code extension that allows you to quickly find and open your projects using a popup dialog triggered by the Shift+Space keyboard shortcut.
 
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-yellow.svg?style=flat-square)](https://buymeacoffee.com/doonfrs)
+
 ## Features
 
 - Quick access to your projects with a simple keyboard shortcut (Shift+Space)
 - Configurable list of project folders to search
 - Automatic detection of valid projects (looks for .git, package.json, .vscode, etc.)
 - Seamless integration with VS Code's folder opening functionality
+
+## Support
+
+If you find this extension helpful, consider buying me a coffee:
+
+[![Buy Me A Coffee](https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png)](https://buymeacoffee.com/doonfrs)
 
 ## Installation
 
@@ -57,7 +65,7 @@ Project Finder scans the configured folders for valid projects. A folder is cons
 
 ## Extension Settings
 
-* `projectFinder.projectFolders`: Array of folder paths to search for projects
+- `projectFinder.projectFolders`: Array of folder paths to search for projects
 
 ## Known Issues
 
@@ -82,4 +90,6 @@ Initial release of Project Finder
 
 ### Publishing
 
-Follow the [VS Code Extension Publishing](https://code.visualstudio.com/api/working-with-extensions/publishing-extension) guide. 
+Follow the [VS Code Extension Publishing](https://code.visualstudio.com/api/working-with-extensions/publishing-extension) guide.
+
+Your support helps maintain and improve this extension!
