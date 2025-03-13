@@ -191,6 +191,10 @@ On Windows, Git Bash style paths (e.g., `/c/Users/YourName/Projects`) are automa
   3. JavaScript frameworks
   4. Other programming languages
   5. Development tools
+- Optimized technology detection system with a unified rule-based approach:
+  - Structured detection rules with explicit priority values
+  - Enhanced detection capabilities with file content analysis
+  - Improved maintainability with centralized technology rules
 
 ### 0.0.5
 

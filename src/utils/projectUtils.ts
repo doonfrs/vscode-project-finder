@@ -25,7 +25,6 @@ export enum ProjectTechnology {
     cplusplus = 'cplusplus',
     c = 'c',
     docker = 'docker',
-    git = 'git',
     laravel = 'laravel',
     django = 'django',
     symfony = 'symfony',
@@ -35,35 +34,155 @@ export enum ProjectTechnology {
 }
 
 /**
- * Technology detection rules
+ * Technology detection rule types
  */
-const technologyRules: { [key in ProjectTechnology]?: string[] } = {
-    [ProjectTechnology.javascript]: ['package.json', 'webpack.config.js', '.eslintrc', 'yarn.lock', 'node_modules'],
-    [ProjectTechnology.typescript]: ['tsconfig.json', '.ts', '.tsx'],
-    [ProjectTechnology.react]: ['react', '.jsx', '.tsx', 'react-dom'],
-    [ProjectTechnology.vue]: ['vue.config.js', '.vue'],
-    [ProjectTechnology.angular]: ['angular.json', '.angular-cli.json'],
-    [ProjectTechnology.node]: ['package.json', 'node_modules', 'npm-debug.log'],
-    [ProjectTechnology.python]: ['requirements.txt', 'setup.py', '.py', 'Pipfile', 'venv', '.venv'],
-    [ProjectTechnology.java]: ['pom.xml', 'build.gradle', '.java', '.jar', 'gradle.properties'],
-    [ProjectTechnology.csharp]: ['.csproj', '.cs', '.sln'],
-    [ProjectTechnology.php]: ['.php', 'composer.json'],
-    [ProjectTechnology.go]: ['go.mod', 'go.sum', '.go'],
-    [ProjectTechnology.rust]: ['Cargo.toml', 'Cargo.lock', '.rs'],
-    [ProjectTechnology.ruby]: ['Gemfile', '.rb', '.gemspec'],
-    [ProjectTechnology.flutter]: ['pubspec.yaml', '.dart'],
-    [ProjectTechnology.swift]: ['.swift', '.xcodeproj', '.xcworkspace'],
-    [ProjectTechnology.kotlin]: ['.kt', '.kts', 'build.gradle.kts'],
-    [ProjectTechnology.cplusplus]: ['.cpp', '.hpp', 'CMakeLists.txt'],
-    [ProjectTechnology.c]: ['.c', '.h'],
-    [ProjectTechnology.docker]: ['Dockerfile', 'docker-compose.yml'],
-    [ProjectTechnology.git]: ['.git'],
-    [ProjectTechnology.laravel]: ['artisan', 'app/Http/Controllers', 'app/Providers/RouteServiceProvider.php'],
-    [ProjectTechnology.django]: ['manage.py', 'django', 'settings.py', 'wsgi.py', 'asgi.py'],
-    [ProjectTechnology.symfony]: ['symfony.lock', 'symfony', 'bin/console', 'config/bundles.php'],
-    [ProjectTechnology.wordpress]: ['wp-config.php', 'wp-content', 'wp-admin', 'wp-includes'],
-    [ProjectTechnology.yii]: ['yii', 'config/web.php', 'config/console.php'],
-    [ProjectTechnology.zend]: ['zend', 'module/Application', 'config/application.config.php']
+type FileIndicator = string;
+type ContentCheck = { file: string, content: string };
+type SubdirectoryCheck = string;
+
+interface TechnologyRule {
+    priority: number;  // Lower number = higher priority
+    files?: FileIndicator[];  // Simple file/directory existence checks
+    extensions?: string[];  // File extension checks
+    content?: ContentCheck[];  // Content-based checks
+    subdirectories?: SubdirectoryCheck[];  // Subdirectory existence checks
+}
+
+/**
+ * Technology detection rules with priority
+ * Priority groups:
+ * 1-99: Frameworks
+ * 100-199: Programming languages
+ * 200+: Tools and others
+ */
+const technologyRules: Record<ProjectTechnology, TechnologyRule> = {
+    // PRIORITY GROUP 1: Frameworks (1-99)
+    [ProjectTechnology.laravel]: {
+        priority: 10,
+        files: ['artisan'],
+        subdirectories: ['app/Http/Controllers', 'app/Providers/RouteServiceProvider.php']
+    },
+    [ProjectTechnology.wordpress]: {
+        priority: 11,
+        files: ['wp-config.php', 'wp-content', 'wp-admin', 'wp-includes']
+    },
+    [ProjectTechnology.django]: {
+        priority: 12,
+        files: ['manage.py'],
+        content: [{ file: 'manage.py', content: 'django' }]
+    },
+    [ProjectTechnology.symfony]: {
+        priority: 13,
+        files: ['symfony.lock', 'bin/console'],
+        subdirectories: ['config/bundles.php']
+    },
+    [ProjectTechnology.yii]: {
+        priority: 14,
+        files: ['yii'],
+        subdirectories: ['config/web.php', 'config/console.php']
+    },
+    [ProjectTechnology.zend]: {
+        priority: 15,
+        subdirectories: ['module/Application', 'config/application.config.php']
+    },
+    [ProjectTechnology.react]: {
+        priority: 20,
+        extensions: ['.jsx', '.tsx'],
+        content: [{ file: 'package.json', content: '"react"' }]
+    },
+    [ProjectTechnology.vue]: {
+        priority: 21,
+        files: ['vue.config.js'],
+        extensions: ['.vue'],
+        content: [{ file: 'package.json', content: '"vue"' }]
+    },
+    [ProjectTechnology.angular]: {
+        priority: 22,
+        files: ['angular.json', '.angular-cli.json'],
+        content: [{ file: 'package.json', content: '"@angular/core"' }]
+    },
+
+    // PRIORITY GROUP 2: Programming Languages (100-199)
+    [ProjectTechnology.php]: {
+        priority: 100,
+        files: ['composer.json'],
+        extensions: ['.php']
+    },
+    [ProjectTechnology.typescript]: {
+        priority: 110,
+        files: ['tsconfig.json'],
+        extensions: ['.ts', '.tsx']
+    },
+    [ProjectTechnology.javascript]: {
+        priority: 111,
+        files: ['package.json', 'webpack.config.js', '.eslintrc', 'yarn.lock'],
+        extensions: ['.js', '.jsx']
+    },
+    [ProjectTechnology.node]: {
+        priority: 112,
+        files: ['package.json', 'node_modules', 'npm-debug.log']
+    },
+    [ProjectTechnology.flutter]: {
+        priority: 120,
+        files: ['pubspec.yaml'],
+        extensions: ['.dart']
+    },
+    [ProjectTechnology.ruby]: {
+        priority: 130,
+        files: ['Gemfile'],
+        extensions: ['.rb', '.gemspec']
+    },
+    [ProjectTechnology.python]: {
+        priority: 140,
+        files: ['requirements.txt', 'setup.py', 'Pipfile', 'venv', '.venv'],
+        extensions: ['.py']
+    },
+    [ProjectTechnology.java]: {
+        priority: 150,
+        files: ['pom.xml', 'build.gradle', 'gradle.properties'],
+        extensions: ['.java', '.jar']
+    },
+    [ProjectTechnology.csharp]: {
+        priority: 160,
+        extensions: ['.csproj', '.cs', '.sln']
+    },
+    [ProjectTechnology.go]: {
+        priority: 170,
+        files: ['go.mod', 'go.sum'],
+        extensions: ['.go']
+    },
+    [ProjectTechnology.rust]: {
+        priority: 180,
+        files: ['Cargo.toml', 'Cargo.lock'],
+        extensions: ['.rs']
+    },
+    [ProjectTechnology.swift]: {
+        priority: 190,
+        extensions: ['.swift', '.xcodeproj', '.xcworkspace']
+    },
+    [ProjectTechnology.kotlin]: {
+        priority: 191,
+        extensions: ['.kt', '.kts'],
+        files: ['build.gradle.kts']
+    },
+    [ProjectTechnology.cplusplus]: {
+        priority: 192,
+        extensions: ['.cpp', '.hpp'],
+        files: ['CMakeLists.txt']
+    },
+    [ProjectTechnology.c]: {
+        priority: 193,
+        extensions: ['.c', '.h']
+    },
+
+    // PRIORITY GROUP 3: Tools and Others (200+)
+    [ProjectTechnology.docker]: {
+        priority: 200,
+        files: ['Dockerfile', 'docker-compose.yml']
+    },
+    [ProjectTechnology.unknown]: {
+        priority: 999
+    }
 };
 
 /**
@@ -90,7 +209,6 @@ export const technologyIcons: { [key in ProjectTechnology]: string } = {
     [ProjectTechnology.cplusplus]: '🔧',
     [ProjectTechnology.c]: '©️',
     [ProjectTechnology.docker]: '🐳',
-    [ProjectTechnology.git]: '📊',
     [ProjectTechnology.laravel]: '🔺',
     [ProjectTechnology.django]: '🐍',
     [ProjectTechnology.symfony]: '🎵',
@@ -113,189 +231,75 @@ export function detectProjectTechnology(projectPath: string): ProjectTechnology 
         // Get all files in the root directory
         const files = fs.readdirSync(projectPath);
         
-        // PRIORITY 1: Check for specific framework files first
+        // Create a list of detected technologies with their priorities
+        const detectedTechnologies: { tech: ProjectTechnology, priority: number }[] = [];
         
-        // Laravel detection
-        if (files.includes('artisan')) {
-            return ProjectTechnology.laravel;
-        }
-        
-        // WordPress detection
-        if (files.includes('wp-config.php') || files.includes('wp-content')) {
-            return ProjectTechnology.wordpress;
-        }
-        
-        // Django detection
-        if (files.includes('manage.py')) {
-            try {
-                const manageContent = fs.readFileSync(path.join(projectPath, 'manage.py'), 'utf8');
-                if (manageContent.includes('django')) {
-                    return ProjectTechnology.django;
-                }
-            } catch (error) {
-                // Continue with other detection methods
+        // Check each technology rule
+        for (const [tech, rule] of Object.entries(technologyRules)) {
+            if (tech === ProjectTechnology.unknown) {
+                continue; // Skip the unknown technology
             }
-        }
-        
-        // Symfony detection
-        if (files.includes('symfony.lock') || files.includes('bin/console')) {
-            return ProjectTechnology.symfony;
-        }
-        
-        // Yii detection
-        if (files.includes('yii') || (files.includes('config') && fs.existsSync(path.join(projectPath, 'config/web.php')))) {
-            return ProjectTechnology.yii;
-        }
-        
-        // Zend detection
-        if (files.includes('config') && fs.existsSync(path.join(projectPath, 'config/application.config.php'))) {
-            return ProjectTechnology.zend;
-        }
-        
-        // PRIORITY 2: Check for PHP before JavaScript
-        if (files.some(file => file.endsWith('.php')) || files.includes('composer.json')) {
-            return ProjectTechnology.php;
-        }
-        
-        // PRIORITY 3: Check for package.json to read dependencies (JavaScript frameworks)
-        if (files.includes('package.json')) {
-            try {
-                const packageJsonPath = path.join(projectPath, 'package.json');
-                const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-                const allDependencies = {
-                    ...(packageJson.dependencies || {}),
-                    ...(packageJson.devDependencies || {})
-                };
-                
-                // Check for specific dependencies
-                if (allDependencies.react) {
-                    return ProjectTechnology.react;
+            
+            let detected = false;
+            
+            // Check for file existence
+            if (rule.files && rule.files.length > 0) {
+                if (rule.files.some(file => files.includes(file))) {
+                    detected = true;
                 }
-                if (allDependencies.vue) {
-                    return ProjectTechnology.vue;
-                }
-                if (allDependencies['@angular/core']) {
-                    return ProjectTechnology.angular;
-                }
-                if (files.includes('tsconfig.json')) {
-                    return ProjectTechnology.typescript;
-                }
-                return ProjectTechnology.javascript;
-            } catch (error) {
-                // If we can't read package.json, continue with file-based detection
-                console.error('Error reading package.json:', error);
             }
-        }
-        
-        // PRIORITY 4: Check for other programming languages
-        
-        // Flutter detection
-        if (files.includes('pubspec.yaml') && files.some(file => file.endsWith('.dart'))) {
-            return ProjectTechnology.flutter;
-        }
-        
-        // Ruby detection
-        if (files.includes('Gemfile') || files.some(file => file.endsWith('.rb'))) {
-            return ProjectTechnology.ruby;
-        }
-        
-        // Python detection (if not Django)
-        if (files.includes('requirements.txt') || files.includes('setup.py') || 
-            files.some(file => file.endsWith('.py')) || files.includes('Pipfile')) {
-            return ProjectTechnology.python;
-        }
-        
-        // Java detection
-        if (files.includes('pom.xml') || files.includes('build.gradle') || 
-            files.some(file => file.endsWith('.java'))) {
-            return ProjectTechnology.java;
-        }
-        
-        // C# detection
-        if (files.some(file => file.endsWith('.csproj') || file.endsWith('.cs') || file.endsWith('.sln'))) {
-            return ProjectTechnology.csharp;
-        }
-        
-        // Go detection
-        if (files.includes('go.mod') || files.includes('go.sum') || 
-            files.some(file => file.endsWith('.go'))) {
-            return ProjectTechnology.go;
-        }
-        
-        // Rust detection
-        if (files.includes('Cargo.toml') || files.includes('Cargo.lock') || 
-            files.some(file => file.endsWith('.rs'))) {
-            return ProjectTechnology.rust;
-        }
-        
-        // Swift detection
-        if (files.some(file => file.endsWith('.swift') || file.endsWith('.xcodeproj'))) {
-            return ProjectTechnology.swift;
-        }
-        
-        // Kotlin detection
-        if (files.some(file => file.endsWith('.kt') || file.endsWith('.kts'))) {
-            return ProjectTechnology.kotlin;
-        }
-        
-        // C++ detection
-        if (files.some(file => file.endsWith('.cpp') || file.endsWith('.hpp'))) {
-            return ProjectTechnology.cplusplus;
-        }
-        
-        // C detection
-        if (files.some(file => file.endsWith('.c') || file.endsWith('.h'))) {
-            return ProjectTechnology.c;
-        }
-        
-        // Docker detection
-        if (files.includes('Dockerfile') || files.includes('docker-compose.yml')) {
-            return ProjectTechnology.docker;
-        }
-        
-        // Git detection
-        if (files.includes('.git')) {
-            return ProjectTechnology.git;
-        }
-
-        // PRIORITY 5: Check for specific files to determine technology using the rules
-        for (const [tech, indicators] of Object.entries(technologyRules)) {
-            for (const indicator of indicators || []) {
-                // Check if indicator is a file extension
-                if (indicator.startsWith('.')) {
-                    // Look for any file with this extension
-                    if (files.some(file => file.endsWith(indicator))) {
-                        return tech as ProjectTechnology;
-                    }
-                } else {
-                    // Check for exact file/directory match
-                    if (files.includes(indicator)) {
-                        return tech as ProjectTechnology;
-                    }
-                    
-                    // Check for subdirectories
-                    if (indicator.includes('/')) {
-                        const parts = indicator.split('/');
-                        let currentPath = projectPath;
-                        let exists = true;
-                        
-                        for (const part of parts) {
-                            currentPath = path.join(currentPath, part);
-                            if (!fs.existsSync(currentPath)) {
-                                exists = false;
+            
+            // Check for file extensions
+            if (!detected && rule.extensions && rule.extensions.length > 0) {
+                if (rule.extensions.some(ext => files.some(file => file.endsWith(ext)))) {
+                    detected = true;
+                }
+            }
+            
+            // Check for content in files
+            if (!detected && rule.content && rule.content.length > 0) {
+                for (const contentCheck of rule.content) {
+                    if (files.includes(contentCheck.file)) {
+                        try {
+                            const fileContent = fs.readFileSync(path.join(projectPath, contentCheck.file), 'utf8');
+                            if (fileContent.includes(contentCheck.content)) {
+                                detected = true;
                                 break;
                             }
-                        }
-                        
-                        if (exists) {
-                            return tech as ProjectTechnology;
+                        } catch (error) {
+                            // Continue if we can't read the file
                         }
                     }
                 }
             }
+            
+            // Check for subdirectories
+            if (!detected && rule.subdirectories && rule.subdirectories.length > 0) {
+                for (const subdir of rule.subdirectories) {
+                    const fullPath = path.join(projectPath, subdir);
+                    if (fs.existsSync(fullPath)) {
+                        detected = true;
+                        break;
+                    }
+                }
+            }
+            
+            // If detected, add to the list
+            if (detected) {
+                detectedTechnologies.push({
+                    tech: tech as ProjectTechnology,
+                    priority: rule.priority
+                });
+            }
         }
-
-        return ProjectTechnology.unknown;
+        
+        // Sort by priority (lower number = higher priority)
+        detectedTechnologies.sort((a, b) => a.priority - b.priority);
+        
+        // Return the highest priority technology, or unknown if none detected
+        return detectedTechnologies.length > 0 
+            ? detectedTechnologies[0].tech 
+            : ProjectTechnology.unknown;
     } catch (error) {
         console.error('Error detecting project technology:', error);
         return ProjectTechnology.unknown;
