@@ -147,12 +147,13 @@ Project Finder scans the configured folders for valid projects. A folder is cons
 - Cargo.toml file
 - go.mod file
 
-The extension also detects specific frameworks and technologies, including:
+The extension detects technologies with the following priority order:
 
-- JavaScript/TypeScript: React, Vue, Angular, Node.js
-- PHP: Laravel, Symfony, WordPress, Yii, Zend
-- Python: Django
-- Ruby, Java, C#, Go, Rust, Flutter, Swift, Kotlin, C++, C, Docker
+1. **Frameworks First**: Laravel, WordPress, Django, Symfony, Yii, Zend
+2. **PHP**: Detected before JavaScript-based technologies
+3. **JavaScript Frameworks**: React, Vue, Angular, Node.js
+4. **Other Programming Languages**: Flutter, Ruby, Python, Java, C#, Go, Rust, Swift, Kotlin, C++, C
+5. **Tools**: Docker, Git
 
 Each detected technology is displayed with its appropriate icon in the project list.
 
@@ -184,6 +185,12 @@ On Windows, Git Bash style paths (e.g., `/c/Users/YourName/Projects`) are automa
   - Ruby: Improved detection logic
 - Improved framework detection algorithm with subdirectory checking
 - Added custom icons for frameworks not included in standard Devicon set
+- Reorganized technology detection with clear priority order:
+  1. Frameworks first (Laravel, WordPress, Django, etc.)
+  2. PHP before JavaScript
+  3. JavaScript frameworks
+  4. Other programming languages
+  5. Development tools
 
 ### 0.0.5
 

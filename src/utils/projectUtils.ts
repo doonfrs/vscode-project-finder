@@ -113,7 +113,7 @@ export function detectProjectTechnology(projectPath: string): ProjectTechnology 
         // Get all files in the root directory
         const files = fs.readdirSync(projectPath);
         
-        // Check for specific framework files first
+        // PRIORITY 1: Check for specific framework files first
         
         // Laravel detection
         if (files.includes('artisan')) {
@@ -152,7 +152,12 @@ export function detectProjectTechnology(projectPath: string): ProjectTechnology 
             return ProjectTechnology.zend;
         }
         
-        // Check for package.json to read dependencies
+        // PRIORITY 2: Check for PHP before JavaScript
+        if (files.some(file => file.endsWith('.php')) || files.includes('composer.json')) {
+            return ProjectTechnology.php;
+        }
+        
+        // PRIORITY 3: Check for package.json to read dependencies (JavaScript frameworks)
         if (files.includes('package.json')) {
             try {
                 const packageJsonPath = path.join(projectPath, 'package.json');
@@ -182,12 +187,78 @@ export function detectProjectTechnology(projectPath: string): ProjectTechnology 
             }
         }
         
+        // PRIORITY 4: Check for other programming languages
+        
+        // Flutter detection
+        if (files.includes('pubspec.yaml') && files.some(file => file.endsWith('.dart'))) {
+            return ProjectTechnology.flutter;
+        }
+        
         // Ruby detection
         if (files.includes('Gemfile') || files.some(file => file.endsWith('.rb'))) {
             return ProjectTechnology.ruby;
         }
+        
+        // Python detection (if not Django)
+        if (files.includes('requirements.txt') || files.includes('setup.py') || 
+            files.some(file => file.endsWith('.py')) || files.includes('Pipfile')) {
+            return ProjectTechnology.python;
+        }
+        
+        // Java detection
+        if (files.includes('pom.xml') || files.includes('build.gradle') || 
+            files.some(file => file.endsWith('.java'))) {
+            return ProjectTechnology.java;
+        }
+        
+        // C# detection
+        if (files.some(file => file.endsWith('.csproj') || file.endsWith('.cs') || file.endsWith('.sln'))) {
+            return ProjectTechnology.csharp;
+        }
+        
+        // Go detection
+        if (files.includes('go.mod') || files.includes('go.sum') || 
+            files.some(file => file.endsWith('.go'))) {
+            return ProjectTechnology.go;
+        }
+        
+        // Rust detection
+        if (files.includes('Cargo.toml') || files.includes('Cargo.lock') || 
+            files.some(file => file.endsWith('.rs'))) {
+            return ProjectTechnology.rust;
+        }
+        
+        // Swift detection
+        if (files.some(file => file.endsWith('.swift') || file.endsWith('.xcodeproj'))) {
+            return ProjectTechnology.swift;
+        }
+        
+        // Kotlin detection
+        if (files.some(file => file.endsWith('.kt') || file.endsWith('.kts'))) {
+            return ProjectTechnology.kotlin;
+        }
+        
+        // C++ detection
+        if (files.some(file => file.endsWith('.cpp') || file.endsWith('.hpp'))) {
+            return ProjectTechnology.cplusplus;
+        }
+        
+        // C detection
+        if (files.some(file => file.endsWith('.c') || file.endsWith('.h'))) {
+            return ProjectTechnology.c;
+        }
+        
+        // Docker detection
+        if (files.includes('Dockerfile') || files.includes('docker-compose.yml')) {
+            return ProjectTechnology.docker;
+        }
+        
+        // Git detection
+        if (files.includes('.git')) {
+            return ProjectTechnology.git;
+        }
 
-        // Check for specific files to determine technology
+        // PRIORITY 5: Check for specific files to determine technology using the rules
         for (const [tech, indicators] of Object.entries(technologyRules)) {
             for (const indicator of indicators || []) {
                 // Check if indicator is a file extension
