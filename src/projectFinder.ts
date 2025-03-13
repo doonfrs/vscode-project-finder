@@ -242,32 +242,49 @@ export class ProjectFinderProvider {
       
       console.log(`Checking folder: ${folder}`);
       
-      if (fs.existsSync(folder)) {
+      // Check if the folder path ends with /* (wildcard pattern)
+      const isWildcardPath = folder.endsWith('/*');
+      
+      // Remove the /* suffix if present
+      const actualFolderPath = isWildcardPath ? folder.slice(0, -2) : folder;
+      
+      if (fs.existsSync(actualFolderPath)) {
         try {
-          const entries = fs.readdirSync(folder, { withFileTypes: true });
-          
-          for (const entry of entries) {
-            if (entry.isDirectory()) {
-              const projectPath = path.join(folder, entry.name);
-              
-              // Check if it's a valid project (has package.json, .git, etc.)
-              // Only check if project indicators are enabled
-              const isValidProject = !this.enableProjectIndicators || this.isValidProject(projectPath);
-              
-              if (isValidProject) {
-                projects.push({
-                  label: entry.name,
-                  description: projectPath,
-                  path: projectPath
-                });
+          if (isWildcardPath) {
+            // For wildcard paths, add all subfolders as projects
+            const entries = fs.readdirSync(actualFolderPath, { withFileTypes: true });
+            
+            for (const entry of entries) {
+              if (entry.isDirectory()) {
+                const projectPath = path.join(actualFolderPath, entry.name);
+                
+                // Check if it's a valid project (has package.json, .git, etc.)
+                // Only check if project indicators are enabled
+                const isValidProject = !this.enableProjectIndicators || this.isValidProject(projectPath);
+                
+                if (isValidProject) {
+                  projects.push({
+                    label: entry.name,
+                    description: projectPath,
+                    path: projectPath
+                  });
+                }
               }
             }
+          } else {
+            // For regular paths, add the folder itself as a project
+            const folderName = path.basename(actualFolderPath);
+            projects.push({
+              label: folderName,
+              description: actualFolderPath,
+              path: actualFolderPath
+            });
           }
         } catch (error) {
-          console.error(`Error reading directory ${folder}:`, error);
+          console.error(`Error reading directory ${actualFolderPath}:`, error);
         }
       } else {
-        console.warn(`Folder does not exist: ${folder}`);
+        console.warn(`Folder does not exist: ${actualFolderPath}`);
       }
     }
 
