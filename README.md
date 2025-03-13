@@ -201,6 +201,11 @@ Join our growing community of developers who value efficiency and productivity i
 3. Run `npm run watch` to compile in watch mode
 4. Press F5 to launch the extension in debug mode
 
+### Technical Notes
+
+- The extension uses the modern `onStartupFinished` activation event, which is more efficient than the older command-based activation events
+- VS Code 1.75.0+ automatically generates activation events based on contribution points, but the `vsce` packaging tool may still require an explicit `activationEvents` property
+
 ### Publishing
 
 Follow the [VS Code Extension Publishing](https://code.visualstudio.com/api/working-with-extensions/publishing-extension) guide.
