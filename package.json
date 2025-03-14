@@ -2,7 +2,7 @@
     "name": "project-finder",
     "displayName": "Project Finder",
     "description": "Quickly find and open projects with a popup dialog",
-    "version": "0.0.8",
+    "version": "0.0.9",
     "publisher": "doonfrs",
     "author": {
         "name": "Feras Abdalrahman"
