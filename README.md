@@ -28,10 +28,25 @@ Ever felt frustrated trying to find that project you worked on last week? Tired 
 
 ## 🛠️ Installation
 
+You can install Project Finder in several ways:
+
+### From VS Code Marketplace UI
+
 1. Launch VS Code
 2. Go to Extensions (Ctrl+Shift+X)
 3. Search for "Project Finder"
 4. Click Install
+
+### From VS Code Marketplace URL
+
+Visit the extension page directly:
+[https://marketplace.visualstudio.com/items?itemName=doonfrs.project-finder](https://marketplace.visualstudio.com/items?itemName=doonfrs.project-finder)
+
+### Using VS Code CLI
+
+```bash
+code --install-extension doonfrs.project-finder
+```
 
 ## ⚙️ Configuration
 
