@@ -2,7 +2,7 @@
     "name": "project-finder",
     "displayName": "Project Finder",
     "description": "Quickly find and open projects with a popup dialog",
-    "version": "0.0.11",
+    "version": "0.0.12",
     "publisher": "doonfrs",
     "author": {
         "name": "Feras Abdalrahman"
@@ -13,10 +13,6 @@
         "url": "https://github.com/doonfrs/vscode-project-finder"
     },
     "icon": "images/icon.png",
-    "galleryBanner": {
-        "color": "#C80000",
-        "theme": "dark"
-    },
     "keywords": [
         "project",
         "finder",

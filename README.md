@@ -310,9 +310,3 @@ If you find this extension helpful, consider buying me a coffee:
   - Quick Pick UI: Uses VS Code's native QuickPick API
   - Custom Popup Dialog: Uses WebView Panel with popup styling for a fully customizable interface
 - The WebView HTML content is stored in a separate file for easier maintenance and customization
-
-### Publishing
-
-Follow the [VS Code Extension Publishing](https://code.visualstudio.com/api/working-with-extensions/publishing-extension) guide.
-
-Your support helps maintain and improve this extension!
